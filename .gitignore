@@ -1,0 +1,18 @@
+node_modules/
+
+# playwright-bdd generated files
+.features-gen/
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# Environment variables
+.env
+
+# Test results
+test-results/
+playwright-report/
+
+# Distribution
+dist/

@@ -16,3 +16,6 @@ playwright-report/
 
 # Distribution
 dist/
+
+# Playwright CLI session artifacts
+.playwright-cli/

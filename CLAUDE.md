@@ -30,6 +30,8 @@ Refer `package.json`
 
 - Always use `await` on every Playwright call
 - Never guess HTML locators — inspect the DOM and always prioritise role-based or test-id selectors
+- When generating Page Object locators, verify them against the live page using `npx playwright-cli open
+<baseURL>` and `npx playwright-cli snapshot` — match real element refs to the feature file's described elements before writing locators into `*Page.ts`
 - Use `logger.info()` at the start of each page method for traceability
 - Use try/catch only for non-Playwright operations — always use `logger.error()` in catch blocks with the error message
   in catch blocks
@@ -38,9 +40,11 @@ Refer `package.json`
   Add all new environment variables to `.env.example` with placeholder values
 - Never manually edit files inside `.features-gen/` — overwritten on every bddgen run
 - Never put business logic or assertions inside step definitions — belongs in Page classes
-- Extract shared logic to `utils/` — if the same code appears in more than one page class, move it to a shared utility
-  function
+- Extract shared logic to `utils/` — if the same code appears in more than one page class, move it to a shared
+  utility function
 - Never bypass ESLint or Prettier checks
+- To self-heal a failing test: run `npx bddgen && npx playwright test --debug=cli`, attach with `npx
+playwright-cli attach <session>`, and use `snapshot`/`console` to diagnose against the generated `.features-gen/**/*.spec.ts` — but apply the fix to the corresponding `src/pages/*Page.ts`, never to the generated spec file
 
 ## Compaction
 

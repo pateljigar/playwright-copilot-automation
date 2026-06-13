@@ -20,6 +20,7 @@
   "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
+    "@playwright/cli": "0.1.14",
     "@playwright/test": "^1.60.0",
     "@types/node": "^25.9.2",
     "@typescript-eslint/eslint-plugin": "^8.60.1",

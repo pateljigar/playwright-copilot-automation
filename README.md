@@ -111,14 +111,35 @@ Claude also proactively flagged a `CLAUDE.md` rule it was following: _"the locat
 
 ---
 
-## Roadmap
+## AI Workflow — Self-Healing with Playwright CLI
 
-**Phase 2 — Playwright CLI self-healing (in progress)**
+`@playwright/cli` gives Claude Code the ability to inspect a live browser session directly — closing the loop between a failing test and the fix, without manual diagnosis.
 
-Extending the AI workflow with [`@playwright/cli`](https://github.com/microsoft/playwright-cli) to give Claude Code the ability to inspect a live browser session directly:
+**Worked example:** A locator was written for a new "theme toggle" scenario based on a plausible guess:
 
-- Verify generated locators against the real DOM before writing test code
-- Self-heal failing tests by snapshotting the live page, identifying the correct selector, and updating the Page Object — closing the loop between test failure and fix without manual intervention
+```typescript
+const themeToggleButton = this.page.getByRole("button", { name: "Theme toggle" });
+```
+
+The test failed. Claude Code was given a single instruction:
+
+> _"The test suite is failing. Fix it."_
+
+Claude ran the test, identified the failure, and — rather than guessing again — stated:
+
+> _"The button name 'Theme toggle' doesn't match the actual element on playwright.dev. I need to inspect the live page to find the correct locator."_
+
+It then used `playwright-cli` to open the live site and snapshot the navigation bar, discovering the button's real accessible name: `"Switch between dark and light mode (currently system mode)"`. Rather than hard-coding this longer string, Claude wrote a regex that matches only the stable portion — avoiding the state-dependent suffix that changes based on the user's theme preference:
+
+```typescript
+const themeToggleButton = this.page.getByRole("button", {
+  name: /Switch between dark and light mode/i,
+});
+```
+
+All 5 tests passed. The fix was applied directly to the Page Object — the generated test spec was left untouched, per `CLAUDE.md`'s conventions.
+
+This same `playwright-cli` integration is also used during **generation**: when a new scenario describes an element without specifying its exact locator (e.g., _"the link to the GitHub repository in the navigation bar"_), Claude inspects the live DOM to find the correct accessible name before writing the Page Object method — rather than guessing.
 
 ---
 

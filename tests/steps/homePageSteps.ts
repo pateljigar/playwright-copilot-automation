@@ -27,3 +27,11 @@ Then("the page heading should be {string}", async ({ homePage }, heading: string
 Then("the search bar should be visible", async ({ homePage }) => {
   await homePage.checkSearchBar();
 });
+
+Then("the GitHub repository link should be visible", async ({ homePage }) => {
+  await homePage.checkGitHubLink();
+});
+
+Then("the theme toggle button should be visible", async ({ homePage }) => {
+  await homePage.checkThemeToggleButton();
+});

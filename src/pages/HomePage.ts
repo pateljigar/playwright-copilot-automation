@@ -1,12 +1,15 @@
 import { expect, Locator, Page } from "@playwright/test";
+import logger from "../../utils/logger";
 
 export class HomePage {
   private readonly page: Page;
   private readonly searchBar: Locator;
+  private readonly githubLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.searchBar = this.page.getByRole("button", { name: /Search/ });
+    this.githubLink = this.page.getByRole("link", { name: "GitHub repository" });
   }
 
   async navigateToHomePage(): Promise<void> {
@@ -37,6 +40,18 @@ export class HomePage {
   async checkSearchBar(): Promise<void> {
     await expect(this.searchBar).toBeVisible();
     await expect(this.searchBar).toBeEnabled();
+  }
+
+  async checkGitHubLink(): Promise<void> {
+    logger.info("Checking GitHub repository link visibility");
+    await expect(this.githubLink).toBeVisible();
+  }
+
+  async checkThemeToggleButton(): Promise<void> {
+    const themeToggleButton = this.page.getByRole("button", {
+      name: /Switch between dark and light mode/i,
+    });
+    await expect(themeToggleButton).toBeVisible();
   }
 
   private link(link: string): Locator {

@@ -18,3 +18,9 @@ Feature: Playwright documentation navigation
 
   Scenario: Search functionality is accessible
     Then the search bar should be visible
+
+  Scenario: GitHub repository link is accessible
+    Then the GitHub repository link should be visible
+
+  Scenario: Theme toggle is visible
+    Then the theme toggle button should be visible

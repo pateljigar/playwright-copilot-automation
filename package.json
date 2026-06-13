@@ -4,7 +4,7 @@
   "description": "AI-Augmented Test Automation: Playwright BDD + GitHub Copilot workflow showcase",
   "main": "index.js",
   "scripts": {
-    "test": "npx bddgen && npx playwright test --headed --grep @chrome",
+    "test": "npx bddgen && npx playwright test",
     "test:headed": "npx bddgen && npx playwright test --headed",
     "test:debug": "npx bddgen && npx playwright test --debug",
     "test:ui": "npx bddgen && npx playwright test --ui",

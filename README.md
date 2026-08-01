@@ -24,16 +24,17 @@ Both files encode the same architectural rules — naming conventions, locator s
 
 ## Tech Stack
 
-| Category     | Tools                               |
-| ------------ | ----------------------------------- |
-| Test runner  | Playwright + playwright-bdd         |
-| Language     | TypeScript (strict mode)            |
-| Pattern      | BDD (Gherkin) + Page Object Model   |
-| Code quality | ESLint v9 (flat config), Prettier   |
-| Git hooks    | Husky + lint-staged                 |
-| Logging      | Winston (console + file transports) |
-| Config       | dotenv                              |
-| CI/CD        | GitHub Actions                      |
+| Category       | Tools                               |
+| -------------- | ----------------------------------- |
+| Test runner    | Playwright + playwright-bdd         |
+| Language       | TypeScript (strict mode)            |
+| Pattern        | BDD (Gherkin) + Page Object Model   |
+| Code quality   | ESLint v9 (flat config), Prettier   |
+| Git hooks      | Husky + lint-staged                 |
+| Logging        | Winston (console + file transports) |
+| Config         | dotenv                              |
+| CI/CD          | GitHub Actions                      |
+| Report hosting | AWS S3 static website hosting       |
 
 ---
 
@@ -83,6 +84,16 @@ npm run test:ui         # Playwright UI mode
 npm run lint            # Check code quality
 npm run format           # Auto-fix formatting
 ```
+
+---
+
+## Live Test Reports
+
+Every push to `main` runs the full suite and publishes the HTML report to S3 automatically:
+
+**[View Latest Report →](https://d1wu7x6gzdj543.cloudfront.net)**
+
+Reports are overwritten each run, so the link always reflects the most recent CI run on `main`. Publishing is handled via GitHub Actions with a least-privilege IAM user scoped to `PutObject`/`GetObject` on the S3 bucket and `CreateInvalidation` on the CloudFront distribution — nothing else in AWS is reachable with these credentials. The report is served over HTTPS via CloudFront in front of a private S3 origin.
 
 ---
 

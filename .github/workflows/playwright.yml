@@ -62,8 +62,15 @@ jobs:
         run: |
           aws s3 cp playwright-report/ s3://${{ vars.S3_BUCKET_NAME }}/ --recursive
 
+      - name: Invalidate CloudFront cache
+        if: ${{ !cancelled() }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
       - name: Report URL
         if: ${{ !cancelled() }}
         run: |
           echo "### Playwright Report" >> $GITHUB_STEP_SUMMARY
-          echo "[View Report](http://${{ vars.S3_BUCKET_NAME }}.s3-website-${{ vars.AWS_REGION }}.amazonaws.com)" >> $GITHUB_STEP_SUMMARY
+          echo "[View Report](https://d1wu7x6gzdj543.cloudfront.net)" >> $GITHUB_STEP_SUMMARY

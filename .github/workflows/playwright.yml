@@ -49,3 +49,20 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+      - name: Configure AWS credentials
+        if: ${{ !cancelled() }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Upload Playwright reports to S3
+        if: ${{ !cancelled() }}
+        run: |
+          aws s3 cp playwright-report/ s3://${{ secrets.S3_BUCKET_NAME }}/ --recursive
+
+      - name: Report URL
+        if: ${{ !cancelled() }}
+        run: |
+          echo 'Playwright report: http://${{ secrets.S3_BUCKET_NAME }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com'

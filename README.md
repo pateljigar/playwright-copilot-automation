@@ -24,18 +24,18 @@ Both files encode the same architectural rules — naming conventions, locator s
 
 ## Tech Stack
 
-| Category       | Tools                               |
-| -------------- | ------------------------------------ |
-| Test runner    | Playwright + playwright-bdd         |
-| Language       | TypeScript (strict mode)            |
-| Pattern        | BDD (Gherkin) + Page Object Model   |
-| Code quality   | ESLint v9 (flat config), Prettier   |
-| Git hooks      | Husky + lint-staged                 |
-| Logging        | Winston (console + file transports) |
-| Config         | dotenv                              |
-| CI/CD          | GitHub Actions                      |
-| Report hosting | AWS S3 static website hosting + CloudFront |
-| AI failure triage | Claude API (`@anthropic-ai/sdk`)  |
+| Category          | Tools                                      |
+| ----------------- | ------------------------------------------ |
+| Test runner       | Playwright + playwright-bdd                |
+| Language          | TypeScript (strict mode)                   |
+| Pattern           | BDD (Gherkin) + Page Object Model          |
+| Code quality      | ESLint v9 (flat config), Prettier          |
+| Git hooks         | Husky + lint-staged                        |
+| Logging           | Winston (console + file transports)        |
+| Config            | dotenv                                     |
+| CI/CD             | GitHub Actions                             |
+| Report hosting    | AWS S3 static website hosting + CloudFront |
+| AI failure triage | Claude API (`@anthropic-ai/sdk`)           |
 
 ---
 
@@ -170,8 +170,8 @@ When tests fail on a pull request, `scripts/aiFailureTriage.ts` reads the Playwr
 
 **Worked example:** A locator in `HomePage.ts` was deliberately broken to point at the wrong accessible name. CI ran, the test failed, and the triage step posted:
 
-| Test | Category | Root Cause | Suggested Fix |
-|---|---|---|---|
+| Test                                 | Category      | Root Cause                                                                                                                                                                  | Suggested Fix                                                                                                                               |
+| ------------------------------------ | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | GitHub repository link is accessible | Locator issue | The locator uses an incorrect accessible name for the link role, which does not match the actual link's accessible name on the page, causing the element to never be found. | Update the locator to use the correct accessible name/text matching the actual GitHub link on the page, and verify against the current DOM. |
 
 After the real fix was pushed, the test suite went green and the stale comment was correctly left untouched — no comment is posted when there's nothing to triage.

@@ -14,7 +14,7 @@ Feature: Playwright documentation navigation
   Scenario: Navigate to docs section
     When I click the "get started" link
     Then the page URL should contain "docs"
-    And the page heading should be "Installation"
+    And the page heading should be "Setup"
 
   Scenario: Search functionality is accessible
     Then the search bar should be visible

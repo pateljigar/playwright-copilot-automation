@@ -25,7 +25,7 @@ Both files encode the same architectural rules — naming conventions, locator s
 ## Tech Stack
 
 | Category       | Tools                               |
-| -------------- | ----------------------------------- |
+| -------------- | ------------------------------------ |
 | Test runner    | Playwright + playwright-bdd         |
 | Language       | TypeScript (strict mode)            |
 | Pattern        | BDD (Gherkin) + Page Object Model   |
@@ -34,7 +34,8 @@ Both files encode the same architectural rules — naming conventions, locator s
 | Logging        | Winston (console + file transports) |
 | Config         | dotenv                              |
 | CI/CD          | GitHub Actions                      |
-| Report hosting | AWS S3 static website hosting       |
+| Report hosting | AWS S3 static website hosting + CloudFront |
+| AI failure triage | Claude API (`@anthropic-ai/sdk`)  |
 
 ---
 
@@ -45,6 +46,8 @@ Both files encode the same architectural rules — naming conventions, locator s
 ├── .github/
 │   ├── workflows/playwright.yml    # CI pipeline
 │   └── copilot-instructions.md     # GitHub Copilot inline guidance
+├── scripts/
+│   └── aiFailureTriage.ts          # AI-driven CI failure triage script
 ├── src/pages/                      # Page Object Model classes (*Page.ts)
 ├── tests/
 │   ├── features/                   # BDD feature files (*.feature)
@@ -151,6 +154,29 @@ const themeToggleButton = this.page.getByRole("button", {
 All 5 tests passed. The fix was applied directly to the Page Object — the generated test spec was left untouched, per `CLAUDE.md`'s conventions.
 
 This same `playwright-cli` integration is also used during **generation**: when a new scenario describes an element without specifying its exact locator (e.g., _"the link to the GitHub repository in the navigation bar"_), Claude inspects the live DOM to find the correct accessible name before writing the Page Object method — rather than guessing.
+
+---
+
+## AI Workflow — Failure Triage in CI
+
+When tests fail on a pull request, `scripts/aiFailureTriage.ts` reads the Playwright JSON reporter output, bundles every failed test into a single Claude API call, and posts a root-cause analysis directly as a PR comment — before anyone opens the Actions tab.
+
+**Design highlights:**
+
+- **One bundled API call, not one per failure** — all failed tests are sent to Claude in a single request, keeping cost and latency predictable regardless of how many tests fail in a run.
+- **Schema and coverage validation on the response** — Claude's output is checked against an exact JSON shape, and cross-checked to confirm it returned exactly one analysis per failed test with matching titles. A response that's valid JSON but incomplete or mismatched is treated as a failure, not silently trusted.
+- **Never fails the build** — every stage (missing results file, missing API key, API errors, malformed responses) degrades gracefully with a distinct log message. The AI triage step cannot turn a legitimate pass or fail into a broken CI pipeline.
+- **Find-and-update, not always-new** — a hidden marker in the comment body lets subsequent runs update the same comment instead of stacking duplicates on the PR.
+
+**Worked example:** A locator in `HomePage.ts` was deliberately broken to point at the wrong accessible name. CI ran, the test failed, and the triage step posted:
+
+| Test | Category | Root Cause | Suggested Fix |
+|---|---|---|---|
+| GitHub repository link is accessible | Locator issue | The locator uses an incorrect accessible name for the link role, which does not match the actual link's accessible name on the page, causing the element to never be found. | Update the locator to use the correct accessible name/text matching the actual GitHub link on the page, and verify against the current DOM. |
+
+After the real fix was pushed, the test suite went green and the stale comment was correctly left untouched — no comment is posted when there's nothing to triage.
+
+A second, unrelated failure was then introduced (an outdated assertion on page heading text) to confirm the update logic under different conditions. The same PR comment was found and edited in place — GitHub's UI marked it "edited" rather than creating a second comment — with new content reflecting the new failure, confirming the find-and-update logic holds across multiple distinct runs, not just the first one.
 
 ---
 

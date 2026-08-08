@@ -15,7 +15,8 @@
     "src/**/*.ts",
     "tests/**/*.ts",
     "utils/**/*.ts",
-    "test-data/**/*.ts"
+    "test-data/**/*.ts",
+    "scripts/**/*.ts"
   ],
   "exclude": ["node_modules", "dist", "playwright-report", "test-results", ".features-gen"]
 }

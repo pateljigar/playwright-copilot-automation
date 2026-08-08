@@ -9,7 +9,8 @@ export class HomePage {
   constructor(page: Page) {
     this.page = page;
     this.searchBar = this.page.getByRole("button", { name: /Search/ });
-    this.githubLink = this.page.getByRole("link", { name: "GitHub repository" });
+    // Intentionally broken locator for AI failure triage validation (feature/ai-failure-triage) - remove before merge.
+    this.githubLink = this.page.getByRole("link", { name: "GitHub Repo Link Wrong Name" });
   }
 
   async navigateToHomePage(): Promise<void> {
